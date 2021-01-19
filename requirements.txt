@@ -1,0 +1,8 @@
+git+https://github.com/owasp-sbot/OSBot-Utils.git
+kubernetes
+pyyaml
+# for testing
+pytest
+pytest-cov
+coveralls
+docker
