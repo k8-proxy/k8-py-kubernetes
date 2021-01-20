@@ -1,7 +1,12 @@
 git+https://github.com/owasp-sbot/OSBot-Utils.git
-git+https://github.com/owasp-sbot/OSBot-AWS.git
 kubernetes
 pyyaml
+
+# for k8_proxy EC2 actions
+git+https://github.com/owasp-sbot/OSBot-AWS.git
+boto3
+python-dotenv
+
 # for testing
 pytest
 pytest-cov
