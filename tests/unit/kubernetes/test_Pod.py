@@ -1,6 +1,8 @@
 from pprint import pprint
 from unittest import TestCase
 
+from kubernetes.client import CoreV1Api
+from kubernetes.watch import Watch
 from osbot_utils.utils.Misc import random_string
 
 from k8_kubectl.helpers.to_add_to_sbot.OSBot_Utils__Local import lower
@@ -10,6 +12,8 @@ from k8_kubectl.kubernetes.Pod import Pod
 
 
 class test_Pod(TestCase):
+
+    pod : Pod
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -23,13 +27,15 @@ class test_Pod(TestCase):
 
     @classmethod
     def tearDownClass(cls) -> None:
-        assert cls.pod.delete() is True
+        assert cls.pod.delete()                        is True
+        assert cls.pod.event_wait_for__type__deleted() is True
+        assert cls.pod.exists()                        is False
 
     def setUp(self) -> None:
         pass
 
     def test_create(self):
-        pass                # todo: add tests for bad creation workflows
+        assert self.pod.event_wait_for('MODIFIED', 'Running')
 
     def test_delete(self):
         pass                # todo: add tests for bad deletion params

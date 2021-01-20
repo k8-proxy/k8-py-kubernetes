@@ -1,5 +1,0 @@
-{  "apiVersion": "v1"                                     ,
-   "kind"      : "Pod"                                    ,
-   "metadata"  : { "name"      : "temp_nginx"             } ,
-   "spec"      : { "containers": [{ "image": "nginx",
-                                    "name" : "nginx" }] } }

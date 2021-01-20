@@ -5,24 +5,35 @@ from kubernetes.client import ApiClient, CoreV1Api, AppsV1Api
 from osbot_utils.decorators.lists.group_by import group_by
 from osbot_utils.decorators.lists.index_by import index_by
 from osbot_utils.decorators.methods.cache import cache
+from osbot_utils.decorators.methods.cache_on_self import cache_on_self
 
 from k8_kubectl.helpers.to_add_to_sbot.OSBot_Utils__Local import ignore_warning__unclosed_ssl
 
 
 class Cluster:
 
-    def __init__(self):
+    def __init__(self, namespace='default', config_file=None):
         ignore_warning__unclosed_ssl()
+        self.namespace   = namespace
+        self.config_file = config_file
 
-    @cache
+
+    @cache_on_self
     def api_apps(self) -> AppsV1Api:
-        config.load_kube_config()
+        self.load_config()
         return client.AppsV1Api()
 
-    @cache
+    @cache_on_self
     def api_core(self) -> CoreV1Api:
-        config.load_kube_config()
+        self.load_config()
         return client.CoreV1Api()
+
+    def info(self):
+        return self.api_core().list_config_map_for_all_namespaces()
+
+    def load_config(self):
+        config.load_kube_config(config_file=self.config_file)
+        return self
 
     @index_by
     def namespaces(self):
@@ -33,11 +44,19 @@ class Cluster:
             namespaces.append(namespace)
         return namespaces
 
+    def pod(self, pod_name):
+        from k8_kubectl.kubernetes.Pod import Pod                                               # circular reference
+        return Pod(pod_name=pod_name, cluster=self)
+
     @index_by
     @group_by
     def pods(self):
         pods = []
-        for item in self.api_core().list_pod_for_all_namespaces(watch=False).items:
+        if self.namespace:
+            pods_data = self.api_core().list_namespaced_pod(self.namespace)
+        else:
+            pods_data = self.api_core().list_pod_for_all_namespaces(watch=False)
+        for item in pods_data.items:
             pod = { "id"         : item.metadata.uid         ,
                     "ip"         : item.status.pod_ip        ,
                     "phase"      : item.status.phase         ,
@@ -47,5 +66,11 @@ class Cluster:
             pods.append(pod)
 
         return pods
+
+    def pods_in_phase(self, phase):
+        return self.pods(group_by='phase').get(phase)
+
+    def pods_pending(self):
+        return self.pods_in_phase('Pending')
 
 
