@@ -14,17 +14,16 @@ class OSBot_AWS__EC2:
         self.ec2    = Ec2()
         self.client = self.ec2.ec2
 
-    def instance_create(self, image_id, instance_type='t2.micro', iam_instance_profile=None):
+    def instance_create(self, image_id, name='from python', instance_type='t2.micro', iam_instance_profile=None):
         kwargs = {
             "ImageId"      : image_id,
             "InstanceType" : instance_type,
             "MaxCount"     : 1,
             "MinCount"     : 1,
-            #"KeyName"      : "KeyName",
             "UserData"     : "UserData",
             "AdditionalInfo": "AdditionalInfo",
             "TagSpecifications": [{ "ResourceType" : "instance",
-                                    "Tags" : [ { 'Key': 'Name', 'Value': 'from python' }]}]
+                                    "Tags" : [ { 'Key': 'Name', 'Value': name }]}]
 
         }
         if iam_instance_profile: kwargs["IamInstanceProfile"] = iam_instance_profile
