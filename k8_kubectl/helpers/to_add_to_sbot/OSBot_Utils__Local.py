@@ -1,6 +1,14 @@
 import re
 import warnings
 
+from osbot_utils.fluent.Fluent_List import Fluent_List
+
+
+def flist(target):
+    return Fluent_List(target)
+
+def list_set(target):
+    return list(set(target))
 
 def remove_multiple_spaces(target):
     return re.sub(' +', ' ', target)
