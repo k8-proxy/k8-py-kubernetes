@@ -16,16 +16,6 @@ class EC2_Server_Fixes:
         self.logs_folder = '/run/desktop/mnt/host/c/'
 
 
-    def k8_logs_folder_size(self):
-        df_raw  = split_lines(self.ec2_ssh.df(self.logs_folder))
-        headers = split_spaces(df_raw[0].replace('Mounted on', "Mounted_on"))
-        values    = split_spaces(df_raw[1])
-        data = {}
-        for index, key in enumerate(headers):
-            data[key] = values[index]
-        return data
-
-
 class test_EC2_Server_Fixes(TestCase):
 
     def setUp(self) -> None:

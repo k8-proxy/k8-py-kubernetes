@@ -4,13 +4,13 @@ import os
 import re
 import warnings
 from io import StringIO
-
 from dotenv import load_dotenv
 from osbot_utils.decorators.lists.group_by import group_by
 from osbot_utils.decorators.lists.index_by import index_by
 from osbot_utils.utils.Files import file_open
 from osbot_utils.utils.Http import GET
 from osbot_utils.utils.Misc import bytes_to_base64, base64_to_bytes
+from osbot_utils.fluent.Fluent_List import Fluent_List
 
 # todo: add units tests to these methods when refactoring to OSBot_Utils project
 def env_value(var_name):
@@ -32,6 +32,8 @@ def env_vars():
 def env_vars_list():
     return list_set(env_vars())
 
+def flist(target):
+    return Fluent_List(target)
 
 @index_by
 @group_by
