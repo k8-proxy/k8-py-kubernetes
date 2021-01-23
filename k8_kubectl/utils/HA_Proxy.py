@@ -19,6 +19,11 @@ class HA_Proxy:
                 'server'    : vars.get('TEST_HAPROXY_SERVER'   ),
                 'username'  : vars.get('TEST_HAPROXY_USERNAME')}
 
+    def resolve_server_id(self, value):
+        for server_id in self.server_list():
+            if value in server_id:
+                return server_id
+
     def server_ips(self):
         return self.server_names_and_ips().get('ips')
 
@@ -31,7 +36,8 @@ class HA_Proxy:
         pxname    = list_group_by(raw_stats,'# pxname')
         icap_pool = pxname.get('icap_pool')
         servers   = list_index_by(icap_pool, 'svname')
-        del servers['BACKEND']                           # this row is the totals
+        if servers.get('BACKEND'):
+            del servers['BACKEND']                           # this row is the totals
         return list_set(servers)
 
     def server_names(self):
@@ -50,16 +56,22 @@ class HA_Proxy:
 
         return { 'ips' : ips, 'names': names }
 
+    def server_stats(self, server_address):
+        server_id = self.resolve_server_id(server_address)
+        return self.stats(index_by='svname').get(server_id)
+
     @index_by
     @group_by
     def stats(self):
         url     = f'{self.server_url()}/;csv'
         headers = self.request_headers()
-        return load_csv_from_url(url, headers)
+        stats   = load_csv_from_url(url, headers)
+        return stats
 
     def request_headers(self):
         source             = f"{self.config.get('username')}:{self.config.get('password')}"
         credentials_base64 = str_to_base64(source)
         return  {'Authorization': f'Basic {credentials_base64}' }
+
 
 

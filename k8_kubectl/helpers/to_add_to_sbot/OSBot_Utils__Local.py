@@ -9,7 +9,7 @@ from osbot_utils.decorators.lists.group_by import group_by
 from osbot_utils.decorators.lists.index_by import index_by
 from osbot_utils.fluent.Fluent_Dict import Fluent_Dict
 from osbot_utils.utils.Files import file_open
-from osbot_utils.utils.Http import GET
+from osbot_utils.utils.Http import GET, port_is_open
 from osbot_utils.utils.Misc import bytes_to_base64, base64_to_bytes
 from osbot_utils.fluent.Fluent_List import Fluent_List
 
@@ -104,3 +104,6 @@ def str_to_bytes(target):
 def split_spaces(target):
     return remove_multiple_spaces(target).split(' ')
 
+
+def is_port_open(host, port, timeout=0.5):
+    return port_is_open(host=host, port=port, timeout=timeout)

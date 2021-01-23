@@ -11,6 +11,12 @@ class test_HA_Proxy(TestCase):
         self.ha_proxy = HA_Proxy()
         print()
 
+    def test_resolve_server_id(self):
+        ip           = self.ha_proxy.server_ips()[0]
+        server_id    = self.ha_proxy.resolve_server_id(ip)
+        server_stats = self.ha_proxy.server_stats(server_id)
+        pprint(server_stats)
+
     def test_server_url(self):
         config = self.ha_proxy.config_from_env()
         assert self.ha_proxy.server_url() == f"{config.get('schema')}://{config.get('server')}:{config.get('port')}"
