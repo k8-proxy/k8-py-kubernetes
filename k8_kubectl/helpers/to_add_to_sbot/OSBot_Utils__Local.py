@@ -7,6 +7,7 @@ from io import StringIO
 from dotenv import load_dotenv
 from osbot_utils.decorators.lists.group_by import group_by
 from osbot_utils.decorators.lists.index_by import index_by
+from osbot_utils.fluent.Fluent_Dict import Fluent_Dict
 from osbot_utils.utils.Files import file_open
 from osbot_utils.utils.Http import GET
 from osbot_utils.utils.Misc import bytes_to_base64, base64_to_bytes
@@ -53,8 +54,23 @@ def load_csv_from_url(url, headers, delimiter=','):
     csv_data = GET(url=url, headers=headers)
     return load_csv_from_str(csv_data=csv_data, delimiter=delimiter)
 
+
+def list_index_by(values, index_by):
+    results = {}
+    for item in values:
+        results[item.get(index_by)] = item
+    return Fluent_Dict(results)
+
+def list_group_by(values, group_by):
+    results = {}
+    for item in values:
+        value = item.get(group_by)
+        if results.get(value) is None: results[value] = []
+        results[value].append(item)
+    return results
+
 def list_set(target):
-    return list(set(target))
+    return sorted(list(set(target)))
 
 @index_by
 @group_by
