@@ -1,20 +1,23 @@
 from pprint import pprint
 from unittest import TestCase
 
-from osbot_utils.utils.Files import path_combine, file_exists
-from osbot_utils.utils.Misc import random_string
-from osbot_utils.utils.Yaml import yaml_load
+import pytest
+from pytest import skip
 
+from osbot_utils.utils.Files import path_combine, file_exists
+from osbot_utils.utils.Yaml import yaml_load
 from k8_kubectl.kubernetes.Cluster import Cluster
-from k8_kubectl.helpers.to_add_to_sbot.OSBot_Utils__Local import lower
 
 
 class test_Kubectl(TestCase):
 
     def setUp(self):
         self.k8 = Cluster()
+        if self.k8.load_config() is False:
+            skip('no K8 clusters available in current environment')
         print()
 
+    @pytest.mark.skip('refactor into a new Deployment class')
     def test_deployment(self):
         deployment_file = path_combine('../../test_files/deployment','nginx-deployment.yaml')
         assert file_exists(deployment_file)
@@ -24,7 +27,6 @@ class test_Kubectl(TestCase):
 
     def test_namespaces(self):
         assert len(self.k8.namespaces()) > 0
-
 
     def test_pods(self):
         assert len(self.k8.pods()) > 0

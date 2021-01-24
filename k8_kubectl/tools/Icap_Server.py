@@ -1,6 +1,5 @@
-from osbot_utils.utils.Http import port_is_open, OPTIONS
+from osbot_utils.utils.Http import port_is_open, OPTIONS, is_port_open
 
-from k8_kubectl.helpers.to_add_to_sbot.OSBot_Utils__Local import is_port_open
 from k8_kubectl.utils.HA_Proxy import HA_Proxy
 
 
@@ -11,10 +10,6 @@ class Icap_Server:
         self.port           = port
         self.ha_proxy       = HA_Proxy()
 
-    def options(self):
-        url = f'http://{self.server_address}:{self.port}'
-
-        return OPTIONS(url)
 
     def stats(self):
         return self.ha_proxy.server_stats(self.server_address)

@@ -1,8 +1,8 @@
 from pprint import pprint
 from unittest import TestCase
 
-from k8_kubectl.helpers.to_add_to_sbot.OSBot_Utils__Local import list_set
 from k8_kubectl.utils.HA_Proxy import HA_Proxy
+from osbot_utils.utils.Misc import list_set
 
 
 class test_HA_Proxy(TestCase):
@@ -15,7 +15,6 @@ class test_HA_Proxy(TestCase):
         ip           = self.ha_proxy.server_ips()[0]
         server_id    = self.ha_proxy.resolve_server_id(ip)
         server_stats = self.ha_proxy.server_stats(server_id)
-        pprint(server_stats)
 
     def test_server_url(self):
         config = self.ha_proxy.config_from_env()

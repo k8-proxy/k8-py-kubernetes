@@ -1,8 +1,7 @@
 from osbot_utils.decorators.lists.group_by import group_by
 from osbot_utils.decorators.lists.index_by import index_by
-
-from k8_kubectl.helpers.to_add_to_sbot.OSBot_Utils__Local import str_to_base64, load_csv_from_url, env_vars, list_set, \
-    list_index_by, list_group_by
+from osbot_utils.utils.Csv import load_csv_from_url
+from osbot_utils.utils.Misc import env_vars, list_group_by, list_index_by, list_set, str_to_base64
 
 
 class HA_Proxy:

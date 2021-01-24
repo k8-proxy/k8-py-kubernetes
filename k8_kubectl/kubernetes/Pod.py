@@ -45,7 +45,7 @@ class Pod:
 
     def event_wait_for(self, wait_for_type, wait_for_phase=None, label='', timeout=10):
         for event in Watch().stream(func            = self.api_core().list_namespaced_pod,
-                                    namespace       = self.namespace                     ,
+                                    namespace       = self.cluster.namespace                     ,
                                     label_selector  = label                              ,
                                     timeout_seconds = timeout                            ):
             event_type  = event.get('type')

@@ -1,11 +1,5 @@
-from pprint import pprint
 from unittest import TestCase
-
-from kubernetes.client import CoreV1Api
-from kubernetes.watch import Watch
-from osbot_utils.utils.Misc import random_string
-
-from k8_kubectl.helpers.to_add_to_sbot.OSBot_Utils__Local import lower
+from osbot_utils.utils.Misc import random_string, lower
 from k8_kubectl.kubernetes.Manifest import Manifest
 from k8_kubectl.kubernetes.Pod import Pod
 
@@ -22,8 +16,6 @@ class test_Pod(TestCase):
         cls.pod_manifest = Manifest().pod_simple(cls.pod_name, cls.image_name)
         cls.pod          = Pod(cls.pod_name)
         cls.pod_info     = cls.pod.create(cls.pod_manifest)
-
-        #assert cls.pod_info.kind == 'Pod'
 
     @classmethod
     def tearDownClass(cls) -> None:

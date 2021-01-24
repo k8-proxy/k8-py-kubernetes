@@ -2,10 +2,14 @@ from os import environ
 from pprint import pprint
 from unittest import TestCase
 
+from pytest import skip
+
+from osbot_utils.utils.Files import file_not_exists
+
 from k8_kubectl.kubernetes.Ssh import Ssh
 
 
-class test_ESXi_Ssh(TestCase):
+class test_Ssh(TestCase):
 
     def setUp(self) -> None:
         self.ssh_config = {
@@ -13,6 +17,8 @@ class test_ESXi_Ssh(TestCase):
             "server"  : '18.202.249.123'                                ,
             "ssh_key" : '/Users/diniscruz/_dev/_AWS_Config/packer.pem'
         }
+        if file_not_exists(self.ssh_config.get('ssh_key')):
+            skip('no ssh key in current test environemnt')
         self.ssh        = Ssh(ssh_config=self.ssh_config)
         print()
 
@@ -36,7 +42,8 @@ class test_ESXi_Ssh(TestCase):
 
     def test_get_get_ssh_params(self):
         ssh_params = self.ssh.get_ssh_params('aaa')
-        assert ssh_params == ['-t', '-i', self.ssh_config.get('ssh_key'),
+        assert ssh_params == ['-o StrictHostKeyChecking=no',
+                              '-t', '-i', self.ssh_config.get('ssh_key'),
                               self.ssh_config.get('user') + '@' + self.ssh_config.get('server'),
                               'aaa']
 
@@ -46,7 +53,7 @@ class test_ESXi_Ssh(TestCase):
     # helper methods
 
     def test_uname(self):
-        assert self.ssh.uname() == 'VMkernel'
+        assert self.ssh.uname() == 'Linux'
 
     # helper methods: esxcli
 

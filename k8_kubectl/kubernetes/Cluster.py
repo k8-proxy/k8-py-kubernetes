@@ -4,10 +4,8 @@ from kubernetes import config, client
 from kubernetes.client import ApiClient, CoreV1Api, AppsV1Api
 from osbot_utils.decorators.lists.group_by import group_by
 from osbot_utils.decorators.lists.index_by import index_by
-from osbot_utils.decorators.methods.cache import cache
 from osbot_utils.decorators.methods.cache_on_self import cache_on_self
-
-from k8_kubectl.helpers.to_add_to_sbot.OSBot_Utils__Local import ignore_warning__unclosed_ssl
+from osbot_utils.utils.Misc import ignore_warning__unclosed_ssl
 
 
 class Cluster:
@@ -16,7 +14,6 @@ class Cluster:
         ignore_warning__unclosed_ssl()
         self.namespace   = namespace
         self.config_file = config_file
-
 
     @cache_on_self
     def api_apps(self) -> AppsV1Api:
@@ -32,8 +29,12 @@ class Cluster:
         return self.api_core().list_config_map_for_all_namespaces()
 
     def load_config(self):
-        config.load_kube_config(config_file=self.config_file)
-        return self
+        try:
+            config.load_kube_config(config_file=self.config_file)
+            return True
+        except Exception as error:
+            print(error)
+            return False
 
     @index_by
     def namespaces(self):
