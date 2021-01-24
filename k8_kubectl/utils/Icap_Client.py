@@ -43,6 +43,9 @@ class Icap_Client:
     def icap_help(self):
         return self.icap_run('-h')
 
+    def icap_process_file(self):
+        pass
+
     def icap_run(self, params=None):
         icap_params = f'time {self.icap_client_path} {params}'
         output      = self.api_docker.docker_run_bash(self.image_name, icap_params)
