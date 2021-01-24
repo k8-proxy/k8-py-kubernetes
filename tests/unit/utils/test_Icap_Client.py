@@ -1,7 +1,8 @@
 from pprint import pprint
 from unittest import TestCase
 
-from osbot_utils.utils.Files import folder_exists, path_combine, file_exists
+from k8_kubectl.utils.Files_To_Rebuild import Files_To_Rebuild
+from osbot_utils.utils.Files import folder_exists, path_combine, file_exists, create_temp_file, file_name
 
 from k8_kubectl.utils.Icap_Client import Icap_Client
 
@@ -9,8 +10,19 @@ from k8_kubectl.utils.Icap_Client import Icap_Client
 class test_Icap_Client(TestCase):
 
     def setUp(self) -> None:
-        self.icap_client = Icap_Client()
+        self.icap_client    = Icap_Client()
+        self.target_ip      = '34.242.162.186'
+        self.target_service = 'gw_rebuild'
         print()
+
+    def test_create_temp_processing_file_folder(self):
+        temp_file      = create_temp_file()
+        temp_file_name = file_name(temp_file)
+        icap_session_folder = self.icap_client.create_temp_processing_file_folder(temp_file)
+        assert folder_exists(icap_session_folder)
+        assert folder_exists(path_combine(icap_session_folder, 'input'))
+        assert folder_exists(path_combine(icap_session_folder, 'output'))
+        assert folder_exists(path_combine(icap_session_folder, f'input/{temp_file_name}'))
 
     def test_extract_time(self):
         text_before = "AAAAA before"
@@ -34,7 +46,14 @@ class test_Icap_Client(TestCase):
             assert service_echo in self.icap_client.icap_echo_service(ip,service_name).get('output')
 
     def test_icap_help(self):
-        assert '-V \t\t\t: Print version and exits\n' in self.icap_client.icap_help().get('output')
+        assert '-V \t\t\t: Print version and exits\n' in self.icap_client.icap_help()
+
+    def test_icap_process_file(self):
+        file_to_process = Files_To_Rebuild().file_word_with_macros()
+
+        result = self.icap_client.icap_process_file(self.target_ip, self.target_service, file_to_process)
+        print()
+        pprint(result)
 
     def test_icap_run(self):
         icap_params = ''
