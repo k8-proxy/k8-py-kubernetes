@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from k8_kubectl.utils.Files_To_Rebuild import Files_To_Rebuild
 from osbot_utils.utils.Files import folder_exists, path_combine, file_exists, create_temp_file, file_name, file_md5, \
-    file_sha256
+    file_sha256, file_size
 
 from k8_kubectl.utils.Icap_Client import Icap_Client
 
@@ -53,11 +53,22 @@ class test_Icap_Client(TestCase):
         assert '-V \t\t\t: Print version and exits\n' in self.icap_client.icap_help()
 
     def test_icap_process_file(self):
-        file_to_process     = Files_To_Rebuild().file_word_with_macros()
-        file_to_process_md5 = file_md5(file_to_process)
-        result = self.icap_client.icap_process_file(self.target_ip, self.target_service, file_to_process)
-        print()
-        pprint(result)
+        file_to_rebuild    = Files_To_Rebuild().file_word_with_macros()
+        file_to_process    = file_to_rebuild.get('local_path')
+        expected_file_md5  = file_to_rebuild.get('md5s'      ).get('rebuilt')
+        expected_file_size = file_to_rebuild.get('file_sizes').get('rebuilt')
+        result             = self.icap_client.icap_process_file(self.target_ip, self.target_service, file_to_process)
+        config             = result.get('config')
+        original_file      = config.get('local_config').get('input_file')
+        rebuilt_file       = config.get('local_config').get('output_file')
+
+        assert file_exists(original_file)
+        assert file_exists(rebuilt_file)
+
+        assert result.get('file_sizes').get('rebuilt') == expected_file_size
+        assert result.get('md5s'      ).get('rebuilt') == expected_file_md5
+
+
 
     def test_icap_run(self):
         icap_params = ''

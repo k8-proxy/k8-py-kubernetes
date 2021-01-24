@@ -3,7 +3,7 @@ from re import search
 
 from osbot_utils.utils.Misc import remove, to_int, random_uuid, new_guid
 from osbot_utils.utils.Files import path_combine, file_name, current_temp_folder, file_contents, \
-    folder_create, create_folder_in_parent, file_copy, file_exists, file_md5
+    folder_create, create_folder_in_parent, file_copy, file_exists, file_md5, file_size
 
 from osbot_docker.API_Docker import API_Docker
 
@@ -83,13 +83,16 @@ class Icap_Client:
         rebuilt_file = config.get('local_config').get('output_file')
 
         processing_result = {
-            "config"     : config                                   ,
-            "icap_result": icap_result                              ,
-            "md5s"       : { "target_file" : file_md5(target_file)  ,
-                             "rebuilt_file": None                   }}
+            "config"     : config                               ,
+            "icap_result": icap_result                          ,
+            'file_sizes' : { "original": file_md5(target_file)  ,
+                             "rebuilt" : None                   },
+            "md5s"       : { "target"  : file_md5(target_file)   ,
+                             "rebuilt" : None                   }}
 
         if file_exists(rebuilt_file):
-            processing_result.get("md5s")['rebuilt_file'] = file_md5(rebuilt_file)
+            processing_result.get("md5s"      )['rebuilt'] = file_md5 (rebuilt_file)
+            processing_result.get("file_sizes")['rebuilt'] = file_size(rebuilt_file)
 
         return processing_result
 
