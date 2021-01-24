@@ -14,12 +14,10 @@ class Icap_Server:
     def stats(self):
         return self.ha_proxy.server_stats(self.server_address)
 
-    def status(self):
+    def status_ha_proxy(self):
         stats = self.stats()
         if stats:
             return self.stats().get('check_status')
-        else:
-            stats = self.stats()
 
-    def is_port_open(self, timeout=0.5):
+    def status_http(self, timeout=0.5):
         return is_port_open(self.server_address, self.port, timeout=timeout)

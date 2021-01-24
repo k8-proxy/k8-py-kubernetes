@@ -1,3 +1,4 @@
+from pprint import pprint
 from unittest import TestCase
 from k8_kubectl.utils.Icap_Server import Icap_Server
 
@@ -11,10 +12,11 @@ class test_Icap_Server(TestCase):
         print()
 
 
-    def test_status(self):
-        assert self.icap_server.status() in ['L4OK', 'L4TOUT']
+    def test_status_ha_proxy(self):
+        assert self.icap_server.status_ha_proxy() in ['L4OK', 'L4TOUT']
 
-        #for ip in ips:
-        #    status = Icap_Server(ip).status()
-        #    print('::', ip, status)
+    def test_status_http(self):
+        assert self.icap_server.status_http() is True
+
+    #self.target_ip = "20.67.220.25"
 

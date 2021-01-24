@@ -8,7 +8,7 @@ class Files_To_Rebuild:
     def __init__(self):
         pass
 
-    @cache_on_tmp(reload_data=True)
+    @cache_on_tmp(reload_data=False)
     def file_word_with_macros(self):
         file_name = "MacroRunCalculator.docm"
         url_file   = f'https://gw-demo-sample-files-eu1.s3-eu-west-1.amazonaws.com/{file_name}'

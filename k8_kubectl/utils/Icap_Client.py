@@ -1,7 +1,7 @@
 from datetime import time
 from re import search
 
-from osbot_utils.utils.Misc import remove, to_int, random_uuid, new_guid
+from osbot_utils.utils.Misc import remove, to_int, random_uuid, new_guid, str_lines
 from osbot_utils.utils.Files import path_combine, file_name, current_temp_folder, file_contents, \
     folder_create, create_folder_in_parent, file_copy, file_exists, file_md5, file_size
 
@@ -15,23 +15,68 @@ class Icap_Client:
         self.image_tag        = "latest"
         self.image_name       = f"{self.image_repository}:{self.image_tag}"
         self.icap_client_path = '/usr/local/c-icap/bin/c-icap-client'
-        self.api_docker = API_Docker()
+        self.api_docker       = API_Docker()
+
+    def extract_icap_headers(self, output):
+        headers = {}
+        icap_headers =  {
+                            "icap_headers"    : headers ,
+                            "icap_server"     : None    ,
+                            "icap_port"       : None    ,
+                            "options_headers" : []      ,
+                            "docker_ip"       : None    ,
+                        }
+        regex_target  = "ICAP server:(.*), ip:(.*), port:(.*)"
+        regex_status  = "(.*)\/1.0 ([0-9]*) OK"
+        regex_service = "Via: (.*)\/1.0 (.*) \((.*)\)"
+        in_icap_headers = False
+        for line in str_lines(output):
+            line = line.strip()
+            if line.startswith('ICAP server'):
+                match = search(regex_target, line)
+                icap_headers['icap_server'] = match.group(1)
+                icap_headers['docker_ip']   = match.group(2)
+                icap_headers['icap_port']   = match.group(3)
+
+            if line.startswith('Add resp header'):
+                (key,value) = line.split(':', 1)
+                icap_headers['options_headers'].append(value)
+            if line == 'ICAP HEADERS:':
+                in_icap_headers = True
+                continue
+            if in_icap_headers:
+                match_status  = search(regex_status, line)
+                match_service = search(regex_service, line)
+                if match_status:
+                    icap_headers['response_status'] = line
+                    icap_headers['schema'         ] = match_status.group(1)
+                    icap_headers['status_code'    ] = match_status.group(2)
+                elif match_service:
+                    icap_headers['response_status'] = line
+                    icap_headers['schema'         ] = match_service.group(1)
+                    icap_headers['k8_container'   ] = match_service.group(2)
+                    icap_headers['icap_service'   ] = match_service.group(3)
+                else:
+                    if line.find(':') > -1:
+                        (key, value)      = line.split(':', 1)
+                        icap_headers[key] = value.strip()
+        return icap_headers
 
     def extract_time(self,output):
         regex_time_data = '\nreal\t(.*)\nuser\t(.*)\nsys\t(.*)\n'
         regex_time      = '(.*)m(.*)\.(.*)s'
         match_time_data = search(regex_time_data, output)
         time_str        = ''
-        time_object     = ''
+        time_date       = ''
         if match_time_data:
             time_str      = match_time_data.group(1)
             match_time    = search(regex_time, time_str)
             minutes       = to_int(match_time.group(1))
             seconds       = to_int(match_time.group(2))
             micro_seconds = to_int(match_time.group(3)) * 1000
-            time_object   = time(0, minutes, seconds, micro_seconds)
-            output        = remove(output, match_time_data.group(0))
-        return {"output": output, "time_str": time_str, 'time_object': time_object}
+            time_date     = time(0, minutes, seconds, micro_seconds)
+            #output        = remove(output, match_time_data.group(0))
+        return {"time_str": time_str, 'time_date': time_date }
 
     def icap_echo(self, icap_server):
         icap_params =  f'-i {icap_server} '   #-s gw_rebuild
@@ -42,7 +87,7 @@ class Icap_Client:
         return self.icap_run(icap_params)
 
     def icap_help(self):
-        return self.icap_run('-h').get('output')
+        return self.icap_run('-h').get('docker_run').get('stdout')
 
     def get_processing_local_config(self, target_file_name):
         icap_processing_folder  = path_combine(current_temp_folder(), 'icap_processing_folder')
@@ -85,7 +130,7 @@ class Icap_Client:
         processing_result = {
             "config"     : config                               ,
             "icap_result": icap_result                          ,
-            'file_sizes' : { "original": file_md5(target_file)  ,
+            'file_sizes' : { "original": file_size(target_file)  ,
                              "rebuilt" : None                   },
             "md5s"       : { "target"  : file_md5(target_file)   ,
                              "rebuilt" : None                   }}
@@ -96,7 +141,7 @@ class Icap_Client:
 
         return processing_result
 
-    def icap_process_file(self, target_ip, target_service, target_file):
+    def icap_process_file(self, target_ip, target_service, target_file, timeout=None):
         self.api_docker.set_debug()
         config                = self.get_processing_config(target_file)
         path_local_icap_data  = config.get('local_config').get('temp_folder')
@@ -104,17 +149,19 @@ class Icap_Client:
         input_file            = config.get('docker_config').get('input_file')
         output_file           = config.get('docker_config').get('output_file')
         docker_options        = { 'key':'-v' , 'value': f'{path_local_icap_data}:{path_docker_icap_data}'}
-        command               = f'-i {target_ip} -s {target_service} -f {input_file} -o {output_file}'
+        command               = f'-v -i {target_ip} -s {target_service} -f {input_file} -o {output_file} -d 10'
         #command               = f'-i {target_ip}'
         icap_result           = self.icap_run(command, options=docker_options)
         processing_result     = self.get_processing_result(config, icap_result)
         return processing_result
 
     def icap_run(self, params=None, options=None):
-        icap_params = f'time {self.icap_client_path} {params}'
-        output      = self.api_docker.docker_run_bash(self.image_name,image_params=icap_params, options=options)
-        console     = output.get('stdout') + output.get('stderr')
-        return self.extract_time(console)
+        icap_params  = f'time {self.icap_client_path} {params}'
+        docker_run   = self.api_docker.docker_run_bash(self.image_name,image_params=icap_params, options=options)
+        console      = docker_run.get('stdout') + docker_run.get('stderr')
+        duration     = self.extract_time(console)
+        icap_headers = self.extract_icap_headers(console)
+        return {"icap_params": icap_params, 'docker_run': docker_run, 'duration': duration, 'icap_headers' : icap_headers}
 
     def icap_run_command(self, command, options=None):
         output = self.api_docker.docker_run_bash(self.image_name, image_params=command,options=options)
@@ -133,6 +180,8 @@ class Icap_Client:
     def path_folder_with_docker_file(self):
         return path_combine(__file__, '../../../docker/icap-client')
 
+    def set_icap_timeout(self, value):
+        self.api_docker.set_docker_run_timeout(value)
 
 
 
