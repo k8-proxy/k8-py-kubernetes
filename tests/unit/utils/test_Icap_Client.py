@@ -2,7 +2,8 @@ from pprint import pprint
 from unittest import TestCase
 
 from k8_kubectl.utils.Files_To_Rebuild import Files_To_Rebuild
-from osbot_utils.utils.Files import folder_exists, path_combine, file_exists, create_temp_file, file_name
+from osbot_utils.utils.Files import folder_exists, path_combine, file_exists, create_temp_file, file_name, file_md5, \
+    file_sha256
 
 from k8_kubectl.utils.Icap_Client import Icap_Client
 
@@ -15,14 +16,17 @@ class test_Icap_Client(TestCase):
         self.target_service = 'gw_rebuild'
         print()
 
-    def test_create_temp_processing_file_folder(self):
-        temp_file      = create_temp_file()
-        temp_file_name = file_name(temp_file)
-        icap_session_folder = self.icap_client.create_temp_processing_file_folder(temp_file)
-        assert folder_exists(icap_session_folder)
-        assert folder_exists(path_combine(icap_session_folder, 'input'))
-        assert folder_exists(path_combine(icap_session_folder, 'output'))
-        assert folder_exists(path_combine(icap_session_folder, f'input/{temp_file_name}'))
+    def test_get_processing_config(self):
+        temp_file = create_temp_file()
+        config    = self.icap_client.get_processing_config(temp_file)
+        assert file_exists(config.get('local_config').get('input_file'))    # todo: rewire asserts below
+
+        # temp_file_name = file_name(temp_file)
+        # icap_session_folder = self.icap_client.create_temp_processing_file_folder(temp_file)
+        # assert folder_exists(icap_session_folder)
+        # assert folder_exists(path_combine(icap_session_folder, 'input'))
+        # assert folder_exists(path_combine(icap_session_folder, 'output'))
+        # assert folder_exists(path_combine(icap_session_folder, f'input/{temp_file_name}'))
 
     def test_extract_time(self):
         text_before = "AAAAA before"
@@ -49,8 +53,8 @@ class test_Icap_Client(TestCase):
         assert '-V \t\t\t: Print version and exits\n' in self.icap_client.icap_help()
 
     def test_icap_process_file(self):
-        file_to_process = Files_To_Rebuild().file_word_with_macros()
-
+        file_to_process     = Files_To_Rebuild().file_word_with_macros()
+        file_to_process_md5 = file_md5(file_to_process)
         result = self.icap_client.icap_process_file(self.target_ip, self.target_service, file_to_process)
         print()
         pprint(result)
