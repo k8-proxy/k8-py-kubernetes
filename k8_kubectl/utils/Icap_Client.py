@@ -18,8 +18,10 @@ class Icap_Client:
 
     def extract_time(self,output):
         regex_time_data = '\nreal\t(.*)\nuser\t(.*)\nsys\t(.*)\n'
-        regex_time       = '(.*)m(.*)\.(.*)s'
+        regex_time      = '(.*)m(.*)\.(.*)s'
         match_time_data = search(regex_time_data, output)
+        time_str        = ''
+        time_object     = ''
         if match_time_data:
             time_str      = match_time_data.group(1)
             match_time    = search(regex_time, time_str)
@@ -32,6 +34,10 @@ class Icap_Client:
 
     def icap_echo(self, icap_server):
         icap_params =  f'-i {icap_server} '   #-s gw_rebuild
+        return self.icap_run(icap_params)
+
+    def icap_echo_service(self, icap_server, service_name):
+        icap_params =  f'-i {icap_server} -s {service_name}'
         return self.icap_run(icap_params)
 
     def icap_help(self):

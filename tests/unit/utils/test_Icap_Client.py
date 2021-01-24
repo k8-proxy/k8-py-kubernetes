@@ -26,6 +26,12 @@ class test_Icap_Client(TestCase):
 
         assert 'ICAP server' in self.icap_client.icap_echo(ip).get('output')
 
+    def test_icap_echo_service(self):
+            # ip = "20.67.220.25"
+            ip = '34.244.46.139'
+            service_name = 'gw_rebuild'
+            service_echo = 'Glasswall Rebuild service'
+            assert service_echo in self.icap_client.icap_echo_service(ip,service_name).get('output')
 
     def test_icap_help(self):
         assert '-V \t\t\t: Print version and exits\n' in self.icap_client.icap_help().get('output')
