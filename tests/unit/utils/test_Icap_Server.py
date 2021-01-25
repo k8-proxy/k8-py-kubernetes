@@ -2,21 +2,28 @@ from pprint import pprint
 from unittest import TestCase
 from k8_kubectl.utils.Icap_Server import Icap_Server
 
-ips = ['51.143.248.246', '51.89.210.149', '3.248.187.0', '54.155.152.233', '34.245.236.144', '34.245.48.242', '34.242.162.186', '34.244.46.139', '34.241.51.250', '34.247.85.155', '34.251.124.159', '3.250.57.14', '34.244.7.158', '54.154.178.234', '63.33.204.68', '34.247.48.151', '18.202.249.123', '34.244.33.69', '3.248.203.245']
-
 class test_Icap_Server(TestCase):
 
     def setUp(self) -> None:
-        self.server_address = '51.143.248.246'
-        self.icap_server = Icap_Server(self.server_address)
-        print()
+        #self.server_address = '51.143.248.246'
+        #self.server_address = "20.67.220.25"
+        self.server_address = '34.242.162.186'
+        self.server_address = '52.50.33.203'
+        #'3.250.131.130'
+        self.icap_service   = 'gw_rebuild'
+        self.icap_timeout   = 15
+        self.icap_server    = Icap_Server(server_address=self.server_address, icap_service=self.icap_service, icap_timeout=self.icap_timeout)
 
 
     def test_status_ha_proxy(self):
-        assert self.icap_server.status_ha_proxy() in ['L4OK', 'L4TOUT']
+        assert self.icap_server.status_ha_proxy() is True #['L4OK', 'L4TOUT']
 
-    def test_status_http(self):
-        assert self.icap_server.status_http() is True
+    def test_status_http_port(self):
+        assert self.icap_server.status_http_port() is True
 
-    #self.target_ip = "20.67.220.25"
+    def test_status_icap_echo(self):
+        assert self.icap_server.status_icap_echo() is True
+
+    def test_status_icap_file(self):
+        assert self.icap_server.status_icap_file() is True
 

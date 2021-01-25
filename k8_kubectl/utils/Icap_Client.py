@@ -141,8 +141,7 @@ class Icap_Client:
 
         return processing_result
 
-    def icap_process_file(self, target_ip, target_service, target_file, timeout=None):
-        self.api_docker.set_debug()
+    def icap_process_file(self, target_ip, target_service, target_file):
         config                = self.get_processing_config(target_file)
         path_local_icap_data  = config.get('local_config').get('temp_folder')
         path_docker_icap_data = config.get('docker_config').get('icap_folder')
