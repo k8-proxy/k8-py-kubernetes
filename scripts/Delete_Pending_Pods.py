@@ -25,7 +25,7 @@ class Delete_Pending_Pods:
 class test_Delete_Pending_Pods(TestCase):
 
     def setUp(self) -> None:
-        self.config_file = "/Users/diniscruz/_dev/_AWS_Config/54.217.189.30/config"
+        self.config_file = "/Users/diniscruz/_dev/_AWS_Config/54.171.103.144/config"
         self.namespace   = "icap-adaptation"
 
         self._ = Delete_Pending_Pods(namespace=self.namespace, config_file=self.config_file)
@@ -35,4 +35,13 @@ class test_Delete_Pending_Pods(TestCase):
         result = self._.delete_pods()
 
         pprint(result)
+
+    def test_check_pods(self):
+        cluster = Cluster(namespace=self.namespace, config_file=self.config_file)
+
+        pprint(cluster.pod('adaptation-service-7c5b5b9548-2vb5w').info())
+
+
+
+
 

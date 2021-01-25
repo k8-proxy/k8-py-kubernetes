@@ -65,7 +65,6 @@ class Cluster:
                     "namespace"  : item.metadata.namespace   ,
                     "start_time" : item.status.start_time    }
             pods.append(pod)
-
         return pods
 
     def pods_in_phase(self, phase):

@@ -25,6 +25,7 @@ class test_HA_Proxy(TestCase):
 
     def test_server_list(self):
         assert len(self.ha_proxy.server_list()) > 0
+        pprint(self.ha_proxy.server_ips())
 
     def test_server_names_and_ips(self):
         data = self.ha_proxy.server_names_and_ips()
