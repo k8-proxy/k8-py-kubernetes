@@ -49,3 +49,6 @@ class Namespace:
             return self.cluster.api_core().read_namespace(name=self.name)
         except:
             return None
+
+    def not_exists(self):
+        return self.info() == {}

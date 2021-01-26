@@ -58,7 +58,13 @@ class test_Ssh(TestCase):
     def test_uname(self):
         assert self.ssh.uname() == 'Linux'
 
-    # helper methods: esxcli
+    # def create_pods(self, count):
+    #     return self.ssh.exec(f'/home/ubuntu/icap-infrastructure/scripts/create_pod.sh {count}')
+    #
+    # def test_created_pod(self):
+    #     self.create_pods(1)
+    #     #assert 'bin' in self.ssh.exec('ls')
+    # # helper methods: esxcli
 
 
 

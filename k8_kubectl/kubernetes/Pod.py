@@ -1,4 +1,7 @@
+from kubernetes.client import ApiException
 from kubernetes.watch                             import Watch
+from osbot_utils.utils.Json import json_loads
+
 from osbot_utils.decorators.methods.cache_on_self import cache_on_self
 from osbot_utils.utils.Status                     import status_ok, status_error
 
@@ -16,9 +19,10 @@ class Pod:
         try:
             pod_info = self.api_core().create_namespaced_pod(body=manifest, namespace=self.cluster.namespace().name)
             return status_ok(message="pod created", data=pod_info)
+        except ApiException as exception:
+            exception_body = json_loads(exception.body)
+            return status_error(message=exception_body.get('message'), error=exception)
         except Exception as exception:
-            # error = json_loads(exception.body)        # todo: catch this is the correct exception type
-            # error.get('message')
             return status_error(error=exception)
 
     def delete(self):
@@ -68,3 +72,6 @@ class Pod:
 
     def event_wait_for__type__deleted(self, label=None,timeout=20):
         return self.event_wait_for(wait_for_type='DELETED', wait_for_phase=None, label=label, timeout=timeout)
+
+    def __repr__(self):
+        return f'Pod: {self.name}'

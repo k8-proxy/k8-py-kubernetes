@@ -13,7 +13,7 @@ class test_Icap_Client(TestCase):
 
     def setUp(self) -> None:
         self.icap_client    = Icap_Client()
-        self.target_ip      = '34.242.162.186'
+        self.target_ip      = '54.171.103.144'# '78.159.113.47'
         self.target_service = 'gw_rebuild'
         print()
 
@@ -111,6 +111,7 @@ class test_Icap_Client(TestCase):
 
         assert result.get('file_sizes').get('rebuilt') == expected_file_size
         assert result.get('md5s'      ).get('rebuilt') == expected_file_md5
+        pprint(result)
 
     def test_icap_process_file__with_timeout(self):
         file_to_rebuild = Files_To_Rebuild().file_word_with_macros()
@@ -138,3 +139,7 @@ class test_Icap_Client(TestCase):
         dockerfile = path_combine(path, 'Dockerfile')
         assert folder_exists(path)
         assert file_exists  (dockerfile)
+
+
+
+

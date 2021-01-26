@@ -58,17 +58,22 @@ class Cluster:
     def namespaces_raw(self):
         return self.api_core().list_namespace().items
 
-    def pod(self, pod_name):
+    def pod(self, name):
         from k8_kubectl.kubernetes.Pod import Pod                                               # circular reference
-        return Pod(name=pod_name, cluster=self)
+        return Pod(name=name, cluster=self)
+
+    def pod_create(self, name, manifest):
+        pod    = self.pod(name)
+        result = pod.create(manifest)
+        return { 'pod': pod, 'result':result }
 
     @index_by
     @group_by
     def pods(self):
         pods = []
-        pods_data = self.api_core().list_namespaced_pod(namespace=self.namespace().name)
-        for item in pods_data.items:
-            pods.append(Pod(item.metadata.name, cluster=self))
+        for item in self.pods_raw():
+            pod = Pod(item.metadata.name, cluster=self)
+            pods.append(pod)
         return pods
 
     def pods_all(self):
@@ -81,8 +86,14 @@ class Cluster:
     def pods_in_phase(self, phase):
         return self.pods(group_by='phase').get(phase)
 
+    def pods_names(self):
+        return [item.metadata.name for item in self.pods_raw()]
+
     def pods_pending(self):
         return self.pods_in_phase('Pending')
+
+    def pods_raw(self):
+        return self.api_core().list_namespaced_pod(namespace=self.namespace().name).items
 
     def set_default_namespace(self, name):
         self.default_namespace = Namespace(name)
