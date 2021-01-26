@@ -1,17 +1,18 @@
+import os
 from pprint import pprint
 from unittest import TestCase
+
+from dotenv import load_dotenv
+
 from k8_kubectl.utils.Icap_Server import Icap_Server
 
 class test_Icap_Server(TestCase):
 
     def setUp(self) -> None:
-        #self.server_address = '51.143.248.246'
-        #self.server_address = "20.67.220.25"
-        self.server_address = '34.242.162.186'
-        self.server_address = '52.50.33.203'
-        #'3.250.131.130'
-        self.icap_service   = 'gw_rebuild'
-        self.icap_timeout   = 15
+        load_dotenv()
+        self.server_address = os.environ.get('TEST_ICAP_SERVER')
+        self.icap_service   = os.environ.get('TEST_ICAP_SERVICE')
+        self.icap_timeout   = 20
         self.icap_server    = Icap_Server(server_address=self.server_address, icap_service=self.icap_service, icap_timeout=self.icap_timeout)
 
 

@@ -12,8 +12,8 @@ from k8_kubectl.kubernetes.Cluster import Cluster
 class test_Kubectl(TestCase):
 
     def setUp(self):
-        self.k8 = Cluster()
-        if self.k8.load_config() is False:
+        self.cluster = Cluster()
+        if self.cluster.load_config() is False:
             skip('no K8 clusters available in current environment')
         print()
 
@@ -22,13 +22,20 @@ class test_Kubectl(TestCase):
         deployment_file = path_combine('../../test_files/deployment','nginx-deployment.yaml')
         assert file_exists(deployment_file)
         deployment = yaml_load(deployment_file)
-        resp = self.k8.api_apps().create_namespaced_deployment(body=deployment, namespace="default")
+        resp = self.cluster.api_apps().create_namespaced_deployment(body=deployment, namespace="default")
         print("Deployment created. status='%s'" % resp.metadata.name)
 
     def test_namespaces(self):
-        assert len(self.k8.namespaces()) > 0
+        assert len(self.cluster.namespaces()) > 0
+
+    def test_namespaces_infos(self):
+        namespaces = self.cluster.namespaces_infos(index_by='name')
+        assert 'default' in namespaces
+        assert namespaces.get('default').get('name'  )       == 'default'
+        assert namespaces.get('default').get('status').phase == 'Active'
 
     def test_pods(self):
-        assert len(self.k8.pods()) > 0
+        assert type(self.cluster.pods()) is list
 
-        pprint(self.k8.pods(index_by='name'))
+    def test_pods_all(self):
+        assert len(self.cluster.pods_all()) > 0

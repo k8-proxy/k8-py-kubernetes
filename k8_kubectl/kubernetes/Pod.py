@@ -1,16 +1,12 @@
-from kubernetes.watch import Watch
-from osbot_utils.decorators.methods.cache import cache
+from kubernetes.watch                             import Watch
 from osbot_utils.decorators.methods.cache_on_self import cache_on_self
-from osbot_utils.utils.Json import json_loads
-
-from k8_kubectl.kubernetes.Cluster import Cluster
-
+from osbot_utils.utils.Status                     import status_ok, status_error
 
 class Pod:
 
-    def __init__(self, pod_name, cluster=None):
-        self.pod_name    = pod_name
-        self.cluster     = cluster or Cluster()
+    def __init__(self, name, cluster):
+        self.name    = name
+        self.cluster = cluster
 
     @cache_on_self
     def api_core(self):
@@ -18,39 +14,53 @@ class Pod:
 
     def create(self, manifest):
         try:
-            pod_info = self.api_core().create_namespaced_pod(body=manifest, namespace=self.cluster.namespace)
-            return {'status': 'ok', 'data' : pod_info }
+            pod_info = self.api_core().create_namespaced_pod(body=manifest, namespace=self.cluster.namespace().name)
+            return status_ok(message="pod created", data=pod_info)
         except Exception as exception:
-            error = json_loads(exception.body)
-            return {'status':'error', 'message': error.get('message'), 'error': error }
+            # error = json_loads(exception.body)        # todo: catch this is the correct exception type
+            # error.get('message')
+            return status_error(error=exception)
 
     def delete(self):
-        if self.exists():       # todo: check for side effects
-        #try:
-            self.api_core().delete_namespaced_pod(name=self.pod_name, namespace=self.cluster.namespace)
-            return True
-        #except Exception as exception:
-        #    from pprint import pprint
-        #    pprint(exception)
-        return False            # todo add a wait for deletion
+        if self.exists():       # todo: check for other states of pod that could affect this deletion action
+            data = self.api_core().delete_namespaced_pod(name=self.name, namespace=self.cluster.namespace().name)
+            return status_ok(message="pod deleted", data=data)
+
+        return status_ok(message="pod not deleted (since it didn't exist)")
 
     def exists(self):
-        return self.info() is not None
+        return self.info() != {}
+
+    def format_pod(self, item):
+        data = {}
+        if item:
+            data = { "id"        : item.metadata.uid             ,
+                     "ip"        : item.status.pod_ip            ,
+                     "image"     : item.spec.containers[0].image ,
+                     "phase"     : item.status.phase             ,
+                     "name"      : item.metadata.name            ,
+                     "namespace" : item.metadata.namespace       ,
+                     "start_time": item.status.start_time        }
+        return data
 
     def info(self):
+        return self.format_pod(self.info_raw().get('data'))
+
+    def info_raw(self):
         try:
-            return self.api_core().read_namespaced_pod(name=self.pod_name, namespace=self.cluster.namespace)
-        except: #Exception as exception:
-            return None                     # todo: capture exception in log
+            data = self.api_core().read_namespaced_pod(name=self.name, namespace=self.cluster.namespace().name)
+            return status_ok(data=data)
+        except Exception as exception:
+            return status_error(error=exception)
 
     def event_wait_for(self, wait_for_type, wait_for_phase=None, label='', timeout=10):
         for event in Watch().stream(func            = self.api_core().list_namespaced_pod,
-                                    namespace       = self.cluster.namespace                     ,
+                                    namespace       = self.cluster.namespace().name      ,
                                     label_selector  = label                              ,
                                     timeout_seconds = timeout                            ):
             event_type  = event.get('type')
             event_phase = event.get('object').status.phase
-            print(event_type, event_phase)
+            #print(event_type, event_phase)          # todo: capture in log
             if event_type == wait_for_type:
                 if event_phase is not None or event_phase == wait_for_phase:
                     return True

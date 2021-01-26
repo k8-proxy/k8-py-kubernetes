@@ -1,7 +1,9 @@
+import os
 from os import environ
 from pprint import pprint
 from unittest import TestCase
 
+from dotenv import load_dotenv
 from pytest import skip
 
 from osbot_utils.utils.Files import file_not_exists
@@ -12,10 +14,11 @@ from k8_kubectl.kubernetes.Ssh import Ssh
 class test_Ssh(TestCase):
 
     def setUp(self) -> None:
+        load_dotenv()
         self.ssh_config = {
-            "user"    : "ubuntu"                                        ,
-            "server"  : '18.202.249.123'                                ,
-            "ssh_key" : '/Users/diniscruz/_dev/_AWS_Config/packer.pem'
+            "user"    : os.environ.get('TEST_SSH_USER'  ),
+            "server"  : os.environ.get('TEST_SSH_SERVER'),
+            "ssh_key" : os.environ.get('TEST_SSH_KEY'   )
         }
         if file_not_exists(self.ssh_config.get('ssh_key')):
             skip('no ssh key in current test environemnt')
