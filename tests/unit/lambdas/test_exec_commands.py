@@ -12,18 +12,25 @@ class test_hello_world(TestCase):
         self.aws_lambda    = Lambda(self.deploy_lambda.lambda_name())   # use OSBot_Lambda helper class to invoke lambdas
         print()
 
-    def deploy_lambda(self):
+    def update_lambda(self):
         self.deploy_lambda.add_osbot_utils()                            # adding the osbot_utils package to the source code
         self.deploy_lambda.deploy()                                     # create or update lambda function
 
     def exec_in_lambda(self, command, params=None):
+        #self.update_lambda()
         event = {'command': command, 'params' : params }
         result = self.aws_lambda.invoke(event)
-        return trim(result.get('stdout')) + trim(result.get('stderr'))
+        return trim(result.get('error' )) + \
+               trim(result.get('stderr')) + \
+               trim(result.get('stdout'))
 
     def test_invoke_lambda(self):
-        result = self.exec_in_lambda('pwd')
-        pprint(result)
+        result = self.exec_in_lambda('ls','/bin')
+        print(result)
 
-    def test_pwd(self):
-        assert self.exec_in_lambda('pwd') == '/var/task'
+
+    def test_ip     (self):  assert self.exec_in_lambda('ip'     ) == "[Errno 2] No such file or directory: 'ip'"
+    def test_ls     (self):  assert self.exec_in_lambda('ls'     ) == 'dotenv\nk8_kubernetes\nosbot_utils'
+    def test_ls_root(self):  assert self.exec_in_lambda('ls', '/') == ('bin\nboot\ndev\netc\nhome\nlib\nlib64\nmedia\nmnt\nopt\nproc\nroot\nrun\nsbin\nsrv\nsys\ntmp\nusr\nvar')
+    def test_pwd    (self):  assert self.exec_in_lambda('pwd'    ) == '/var/task'
+    def test_uname  (self):  assert self.exec_in_lambda('uname'  ) == 'Linux'
