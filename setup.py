@@ -4,8 +4,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    version                       = "0.2.1"               , # change this on every release
-    name                          = "k8_kubectl"  ,
+    version                       = "0.3.1"               , # change this on every release
+    name                          = "k8_kubernetes"  ,
     author                        = "Dinis Cruz",
     author_email                  = "dcruz@glasswallsolutions.com",
     description                   = "Glasswall - K8 Kubernetes helper methods",
