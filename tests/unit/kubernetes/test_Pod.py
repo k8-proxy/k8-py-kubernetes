@@ -1,8 +1,8 @@
 from unittest import TestCase
-from k8_kubectl.kubernetes.Cluster import Cluster
+from k8_kubernetes.kubernetes.Cluster import Cluster
 from osbot_utils.utils.Misc import random_string, lower
-from k8_kubectl.kubernetes.Manifest import Manifest
-from k8_kubectl.kubernetes.Pod import Pod
+from k8_kubernetes.kubernetes.Manifest import Manifest
+from k8_kubernetes.kubernetes.Pod import Pod
 
 class test_Pod(TestCase):
 

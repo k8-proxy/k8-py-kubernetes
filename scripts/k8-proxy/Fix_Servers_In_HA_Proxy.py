@@ -1,7 +1,7 @@
 from pprint import pprint
 from unittest import TestCase
 
-from k8_kubectl.utils.Icap_Server import Icap_Server
+from k8_kubernetes.utils.Icap_Server import Icap_Server
 
 
 class Fix_Servers_In_HA_Proxy:

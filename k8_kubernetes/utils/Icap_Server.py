@@ -1,8 +1,8 @@
-from k8_kubectl.utils.Files_To_Rebuild import Files_To_Rebuild
-from k8_kubectl.utils.Icap_Client import Icap_Client
+from k8_kubernetes.utils.Files_To_Rebuild import Files_To_Rebuild
+from k8_kubernetes.utils.Icap_Client import Icap_Client
 from osbot_utils.utils.Http import port_is_open, OPTIONS, is_port_open
 
-from k8_kubectl.utils.HA_Proxy import HA_Proxy
+from k8_kubernetes.utils.HA_Proxy import HA_Proxy
 
 
 class Icap_Server:

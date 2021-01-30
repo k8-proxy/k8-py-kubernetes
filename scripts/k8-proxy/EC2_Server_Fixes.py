@@ -1,6 +1,6 @@
 from pprint import pprint
 from unittest import TestCase
-from k8_kubectl.kubernetes.Ssh import Ssh
+from k8_kubernetes.kubernetes.Ssh import Ssh
 
 
 class EC2_Server_Fixes:

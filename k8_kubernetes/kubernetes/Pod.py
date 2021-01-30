@@ -1,5 +1,5 @@
-from kubernetes.client import ApiException
-from kubernetes.watch                             import Watch
+from k8_kubernetes.client import ApiException
+from k8_kubernetes.watch                             import Watch
 from osbot_utils.utils.Json import json_loads
 
 from osbot_utils.decorators.methods.cache_on_self import cache_on_self

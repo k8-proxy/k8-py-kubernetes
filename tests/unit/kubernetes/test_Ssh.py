@@ -8,7 +8,7 @@ from pytest import skip
 
 from osbot_utils.utils.Files import file_not_exists
 
-from k8_kubectl.kubernetes.Ssh import Ssh
+from k8_kubernetes.kubernetes.Ssh import Ssh
 
 
 class test_Ssh(TestCase):

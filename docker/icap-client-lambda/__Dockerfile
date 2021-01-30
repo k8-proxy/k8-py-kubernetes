@@ -1,0 +1,62 @@
+# Define custom function directory
+ARG FUNCTION_DIR="/function"
+
+FROM python:buster as build-image
+
+# Include global arg in this stage of the build
+ARG FUNCTION_DIR
+
+# Install aws-lambda-cpp build dependencies
+RUN apt-get update && \
+  apt-get install -y \
+  g++ \
+  make \
+  cmake \
+  unzip \
+  libcurl4-openssl-dev
+
+
+# Create function directory
+RUN mkdir -p ${FUNCTION_DIR}
+
+# Install the function's dependencies
+RUN pip install \
+    --target ${FUNCTION_DIR} \
+        awslambdaric
+
+# Copy handler function
+#COPY app/* ${FUNCTION_DIR}
+COPY app.py ${FUNCTION_DIR}
+
+
+FROM python:buster
+
+# Include global arg in this stage of the build
+ARG FUNCTION_DIR
+# Set working directory to function root directory
+WORKDIR ${FUNCTION_DIR}
+
+# Copy in the built dependencies
+COPY --from=build-image ${FUNCTION_DIR} ${FUNCTION_DIR}
+ENV AWS_LAMBDA_RUNTIME_API=785217600689
+ENTRYPOINT [ "/usr/local/bin/python", "-m", "awslambdaric" ]
+CMD [ "app.run" ]
+
+
+
+
+
+
+#FROM 785217600689.dkr.ecr.eu-west-1.amazonaws.com/icap-client
+
+#RUN git clone https://github.com/owasp-sbot/OSBot-Utils.git
+#RUN git clone https://github.com/owasp-sbot/OSBot-AWS.git
+#RUN cp -R ./OSBot-Utils/osbot_utils ${LAMBDA_TASK_ROOT}/osbot_utils
+#RUN cp -R ./OSBot-AWS/osbot_utils ${LAMBDA_TASK_ROOT}/osbot_aws
+
+#FROM public.ecr.aws/lambda/python:3.8
+# Copy function code
+#COPY app.py ${LAMBDA_TASK_ROOT}
+
+# Set the CMD to your handler (could also be done as a parameter override outside of the Dockerfile)
+#CMD [ "app.run" ]

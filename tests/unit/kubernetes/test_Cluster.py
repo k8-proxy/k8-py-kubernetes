@@ -6,7 +6,7 @@ from pytest import skip
 
 from osbot_utils.utils.Files import path_combine, file_exists
 from osbot_utils.utils.Yaml import yaml_load
-from k8_kubectl.kubernetes.Cluster import Cluster
+from k8_kubernetes.kubernetes.Cluster import Cluster
 
 
 class test_Kubectl(TestCase):

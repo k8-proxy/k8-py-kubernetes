@@ -3,8 +3,8 @@ from unittest import TestCase
 
 from osbot_utils.utils.Files import file_contents, file_exists
 
-from k8_kubectl.kubernetes.Cluster import Cluster
-from k8_kubectl.kubernetes.Pod import Pod
+from k8_kubernetes.kubernetes.Cluster import Cluster
+from k8_kubernetes.kubernetes.Pod import Pod
 
 
 class Delete_Pending_Pods:

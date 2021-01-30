@@ -1,20 +1,24 @@
+import os
 import subprocess
 from pprint import pprint
 from unittest import TestCase
 
-from k8_kubectl.utils.Files_To_Rebuild import Files_To_Rebuild
+from dotenv import load_dotenv
+
+from k8_kubernetes.utils.Files_To_Rebuild import Files_To_Rebuild
 from osbot_utils.utils.Files import folder_exists, path_combine, file_exists, create_temp_file, file_name, file_md5, \
     file_sha256, file_size
 
-from k8_kubectl.utils.Icap_Client import Icap_Client
+from k8_kubernetes.utils.Icap_Client import Icap_Client
 
 
 class test_Icap_Client(TestCase):
 
     def setUp(self) -> None:
+        load_dotenv()                                                       # todo: write helper function to get a valid test server
         self.icap_client    = Icap_Client()
-        self.target_ip      = '54.171.103.144'# '78.159.113.47'
-        self.target_service = 'gw_rebuild'
+        self.target_ip      = os.environ.get('TEST_ICAP_SERVER')            # todo: write helper function to get a valid test server
+        self.target_service = os.environ.get('TEST_ICAP_SERVICE')
         print()
 
     def test_get_processing_config(self):

@@ -4,8 +4,8 @@ from unittest import TestCase
 
 from dotenv import load_dotenv
 
-from k8_kubectl.kubernetes.Cluster import Cluster
-from k8_kubectl.kubernetes.Manifest import Manifest
+from k8_kubernetes.kubernetes.Cluster import Cluster
+from k8_kubernetes.kubernetes.Manifest import Manifest
 from osbot_utils.utils.Misc import append_random_string, lower
 
 

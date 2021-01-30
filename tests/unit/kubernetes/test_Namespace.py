@@ -6,8 +6,8 @@ from dotenv import load_dotenv
 from kubernetes import client
 from osbot_utils.utils.Misc import random_text, random_id
 
-from k8_kubectl.kubernetes.Cluster import Cluster
-from k8_kubectl.kubernetes.Namespace import Namespace
+from k8_kubernetes.kubernetes.Cluster import Cluster
+from k8_kubernetes.kubernetes.Namespace import Namespace
 from osbot_utils.utils.Files import file_exists
 
 

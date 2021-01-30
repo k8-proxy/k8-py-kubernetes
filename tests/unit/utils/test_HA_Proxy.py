@@ -1,7 +1,7 @@
 from pprint import pprint
 from unittest import TestCase
 
-from k8_kubectl.utils.HA_Proxy import HA_Proxy
+from k8_kubernetes.utils.HA_Proxy import HA_Proxy
 from osbot_utils.utils.Misc import list_set
 
 

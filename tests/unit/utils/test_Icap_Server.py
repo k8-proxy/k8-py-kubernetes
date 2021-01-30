@@ -4,7 +4,7 @@ from unittest import TestCase
 
 from dotenv import load_dotenv
 
-from k8_kubectl.utils.Icap_Server import Icap_Server
+from k8_kubernetes.utils.Icap_Server import Icap_Server
 
 class test_Icap_Server(TestCase):
 

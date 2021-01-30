@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from osbot_utils.utils.Files import file_exists
 
-from k8_kubectl.utils.Files_To_Rebuild import Files_To_Rebuild
+from k8_kubernetes.utils.Files_To_Rebuild import Files_To_Rebuild
 
 
 class test_Files_To_Rebuild(TestCase):

@@ -3,8 +3,8 @@ import warnings
 from kubernetes import config, client
 from kubernetes.client import ApiClient, CoreV1Api, AppsV1Api
 
-from k8_kubectl.kubernetes.Namespace                import Namespace
-from k8_kubectl.kubernetes.Pod                      import Pod
+from k8_kubernetes.kubernetes.Namespace                import Namespace
+from k8_kubernetes.kubernetes.Pod                      import Pod
 from osbot_utils.decorators.lists.group_by          import group_by
 from osbot_utils.decorators.lists.index_by          import index_by
 from osbot_utils.decorators.methods.cache_on_self   import cache_on_self
@@ -59,7 +59,7 @@ class Cluster:
         return self.api_core().list_namespace().items
 
     def pod(self, name):
-        from k8_kubectl.kubernetes.Pod import Pod                                               # circular reference
+        from k8_kubernetes.kubernetes.Pod import Pod                                               # circular reference
         return Pod(name=name, cluster=self)
 
     def pod_create(self, name, manifest):
