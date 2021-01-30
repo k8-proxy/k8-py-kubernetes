@@ -1,7 +1,8 @@
 from osbot_utils.decorators.lists.group_by import group_by
 from osbot_utils.decorators.lists.index_by import index_by
 from osbot_utils.utils.Csv import load_csv_from_url
-from osbot_utils.utils.Misc import env_vars, list_group_by, list_index_by, list_set, str_to_base64
+from osbot_utils.utils.Http import is_port_open
+from osbot_utils.utils.Misc import env_vars, list_group_by, list_index_by, list_set, str_to_base64, to_int
 
 
 class HA_Proxy:
@@ -25,6 +26,10 @@ class HA_Proxy:
 
     def server_ips(self):
         return self.server_names_and_ips().get('ips')
+
+    def server_online(self):
+        config = self.config
+        return is_port_open(config.get('server'), to_int(config.get('port')))
 
     def server_url(self):
         config = self.config

@@ -3,7 +3,9 @@ from pprint import pprint
 from unittest import TestCase
 
 from dotenv import load_dotenv
+from pytest import skip
 
+from k8_kubernetes.utils.HA_Proxy import HA_Proxy
 from k8_kubernetes.utils.Icap_Server import Icap_Server
 
 class test_Icap_Server(TestCase):
@@ -17,7 +19,10 @@ class test_Icap_Server(TestCase):
 
 
     def test_status_ha_proxy(self):
-        assert self.icap_server.status_ha_proxy() is True #['L4OK', 'L4TOUT']
+        self.ha_proxy = HA_Proxy()
+        if self.ha_proxy.server_online() is False:
+            skip('ha_proxy server is not online')
+        assert self.icap_server.status_ha_proxy() is True
 
     def test_status_http_port(self):
         assert self.icap_server.status_http_port() is True

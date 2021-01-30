@@ -1,6 +1,6 @@
 from unittest import TestCase
 from k8_kubernetes.kubernetes.Cluster import Cluster
-from osbot_utils.utils.Misc import random_string, lower
+from osbot_utils.utils.Misc import random_string, lower, list_set
 from k8_kubernetes.kubernetes.Manifest import Manifest
 from k8_kubernetes.kubernetes.Pod import Pod
 
@@ -40,12 +40,5 @@ class test_Pod(TestCase):
         pod_info = self.pod.info()
         del pod_info['id']
         del pod_info['start_time']
-        assert pod_info == {'image'     : 'nginx'   ,
-                            'ip'        : None      ,
-                            'name'      : 'temp-pod',
-                            'namespace' : 'default' ,
-                            'phase'     : 'Pending' }
-
-
-
-
+        assert list_set(pod_info) == ['image', 'ip', 'name', 'namespace', 'phase']
+        assert pod_info['name'  ] == self.pod_name

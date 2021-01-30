@@ -21,7 +21,7 @@ class test_Ssh(TestCase):
             "ssh_key" : os.environ.get('TEST_SSH_KEY'   )
         }
         if file_not_exists(self.ssh_config.get('ssh_key')):
-            skip('no ssh key in current test environemnt')
+            skip('no ssh key in current test environment')
         self.ssh        = Ssh(ssh_config=self.ssh_config)
         print()
 

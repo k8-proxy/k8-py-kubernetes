@@ -24,8 +24,8 @@ class test_Namespace(TestCase):
         assert file_exists(self.config_file)
         assert self._.name == self.name
 
-    def test_create(self):
-        pass    # see test_create__delete
+    #def test_create(self):
+    #    pass    # see test_create__delete
 
     def test_create__delete(self):
         namespace = Namespace(random_id(prefix='unit-test-'), cluster=self.cluster)
@@ -34,17 +34,13 @@ class test_Namespace(TestCase):
         assert namespace.create    ().get('message')        == 'namespace created'
         assert namespace.exists    ()                       is True
         assert namespace.info      ().get('status' ).phase  =='Active'
-        assert namespace.list_names()                        .contains(namespace.name)
+        assert self.cluster.namespaces_names().index(namespace.name) > -1
         assert namespace.delete    ().get('message')        == 'namespace deleted'
         assert namespace.info      ().get('status' ).phase  =='Terminating'
         #assert namespace.exists()                is True # todo add method to wait for termination status to complete
 
-    def test_exists(self):
-        pass    # see test_create__delete
-
-    def test_info(self):
-        pass    # see test_create__delete
-
-    def test_list(self):
-        result = self._.list()
-        assert len(result) > 0
+    # def test_exists(self):
+    #     pass    # see test_create__delete
+    #
+    # def test_info(self):
+    #     pass    # see test_create__delete
