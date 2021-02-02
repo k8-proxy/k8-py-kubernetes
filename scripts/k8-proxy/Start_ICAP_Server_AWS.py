@@ -2,7 +2,7 @@ import os
 from pprint import pprint
 from unittest import TestCase
 
-from osbot_aws.apis.Ec2 import Ec2
+from osbot_aws.apis.EC2 import EC2
 from osbot_aws.apis.S3 import S3
 from osbot_aws.apis.Session import Session
 
@@ -11,7 +11,7 @@ os.environ['AWS_DEFAULT_REGION'] = "eu-west-3"
 
 class Start_ICAP_Server_AWS:
     def __init__(self):
-        self.ec2 = Ec2()
+        self.ec2 = EC2()
 
 
     def ec2_servers(self):

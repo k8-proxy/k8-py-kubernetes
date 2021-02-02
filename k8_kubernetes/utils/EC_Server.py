@@ -1,6 +1,8 @@
 import os
 
 from dotenv import load_dotenv
+
+from k8_kubernetes.kubernetes.Ssh import Ssh
 from osbot_utils.decorators.methods.cache_on_self import cache_on_self
 
 
