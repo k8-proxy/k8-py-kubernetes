@@ -1,9 +1,0 @@
-[submodule "modules/OSBot-Utils"]
-	path = modules/OSBot-Utils
-	url = git@github.com:owasp-sbot/OSBot-Utils.git
-[submodule "modules/OSBot-Docker"]
-	path = modules/OSBot-Docker
-	url = git@github.com:owasp-sbot/OSBot-Docker.git
-[submodule "modules/OSBot-AWS"]
-	path = modules/OSBot-AWS
-	url = git@github.com:owasp-sbot/OSBot-AWS.git
